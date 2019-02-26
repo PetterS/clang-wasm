@@ -1,0 +1,11 @@
+<html>
+<body>
+<script>
+const importObject = { imports: { } };
+WebAssembly.instantiateStreaming(fetch('library.wasm'), importObject)
+	.then(function(obj) {
+		document.write("petter() = " + obj.instance.exports.petter());
+	});
+</script>
+</body>
+</html>
