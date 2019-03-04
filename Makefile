@@ -1,19 +1,27 @@
+DEPS = 
+OBJ = library.o
+OUTPUT = library.wasm
 
-library.wasm: library.c Makefile
-	# sudo ln -s /usr/lib/llvm-8/bin/wasm-ld /usr/bin/wasm-ld
+$(OUTPUT): $(OBJ) Makefile
+	wasm-ld-8 \
+		-o $(OUTPUT) \
+		--no-entry \
+		--export=petter \
+		$(OBJ)
+
+%.o: %.c $(DEPS)
 	clang-8 \
+		-c \
 		--target=wasm32 \
 		-Os \
-		-o library.wasm \
+		-o $@ \
 		-nostdlib \
-		--for-linker=--no-entry \
-		--for-linker=-export=petter \
-		library.c
+		$<
 
-library.wat: library.wasm Makefile
-	~/build/wabt/wasm2wat -o library.wat library.wasm
+library.wat: $(OUTPUT) Makefile
+	~/build/wabt/wasm2wat -o library.wat $(OUTPUT)
 
 wat: library.wat
 
 clean:
-	rm library.wasm
+	rm -f $(OBJ) $(OUTPUT) library.wat
