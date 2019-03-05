@@ -9,6 +9,7 @@ $(OUTPUT): $(OBJ) library.syms Makefile
 		-allow-undefined-file library.syms \
 		--strip-all \
 		--export-dynamic \
+		--initial-memory=131072 \
 		$(OBJ)
 
 %.o: %.c $(DEPS) Makefile

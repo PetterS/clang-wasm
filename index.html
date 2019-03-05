@@ -1,15 +1,34 @@
 <html>
 <body>
 <script>
+let wasm;
+let memory;
+
+// If the Webassemby module had been linked with
+//
+//   --import-memory
+//
+// its memory will be provided with
+//
+//   const wasmMemory = new WebAssembly.Memory({initial:10, maximum:100});
+//   const memory = new Uint8Array(wasmMemory.buffer);
+//
+// But this module is providing its own memory and exporting it.
+
 const importObject = {
 	env: {
-		get_input: function() { return 21; }
+		get_input: function() { return 21; },
+		print_string: function(str, length) {
+			const decoder = new TextDecoder("utf-8");
+			console.log(decoder.decode(memory.subarray(str, str + length)));
+		}
 	}
 };
-let wasm;
+
 WebAssembly.instantiateStreaming(fetch('library.wasm'), importObject)
 	.then(function(obj) {
 		wasm = obj;
+		memory = new Uint8Array(wasm.instance.exports.memory.buffer);
 		document.write("petter() = " + obj.instance.exports.petter());
 	});
 </script>
