@@ -1,8 +1,20 @@
+<!DOCTYPE html>
 <html>
+<head>
+	<meta charset="utf-8" />
+</head>
 <body>
 <script>
 let wasm;
 let memory;
+
+const decoder = new TextDecoder("utf-8");
+
+function charPtrToString(str) {
+	let length=0;
+	for (; memory[str + length] !== 0 ;++length) {}
+	return decoder.decode(memory.subarray(str, str + length));
+}
 
 // If the Webassemby module had been linked with
 //
@@ -18,9 +30,8 @@ let memory;
 const importObject = {
 	env: {
 		get_input: function() { return 21; },
-		print_string: function(str, length) {
-			const decoder = new TextDecoder("utf-8");
-			console.log(decoder.decode(memory.subarray(str, str + length)));
+		print_string: function(str) {
+			console.log(charPtrToString(str));
 		}
 	}
 };

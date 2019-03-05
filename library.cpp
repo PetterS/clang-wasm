@@ -3,13 +3,17 @@
 // Will be provided by Javascript.
 extern "C" {
 	int get_input();
-	void print_string(const char* str, int length);
+	void print_string(const char* str);
+}
+
+void trap() {
+	__builtin_unreachable();
 }
 
 void print(const char* str) {
 	const char* end = str;
 	while (*(end++));
-	print_string(str, end - str);
+	print_string(str);
 }
 
 int two() {
