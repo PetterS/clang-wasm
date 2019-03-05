@@ -12,8 +12,8 @@ $(OUTPUT): $(OBJ) library.syms Makefile
 		--initial-memory=131072 \
 		$(OBJ)
 
-%.o: %.c $(DEPS) Makefile
-	clang-8 \
+%.o: %.cpp $(DEPS) Makefile
+	clang++-8 \
 		-c \
 		-Wall \
 		-Werror \

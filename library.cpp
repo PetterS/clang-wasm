@@ -1,8 +1,10 @@
-#define WASM_EXPORT __attribute__((visibility("default")))
+#define WASM_EXPORT __attribute__((visibility("default"))) extern "C"
 
 // Will be provided by Javascript.
-int get_input();
-void print_string(const char* str, int length);
+extern "C" {
+	int get_input();
+	void print_string(const char* str, int length);
+}
 
 void print(const char* str) {
 	const char* end = str;
