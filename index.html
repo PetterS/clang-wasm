@@ -1,9 +1,15 @@
 <html>
 <body>
 <script>
-const importObject = { imports: { } };
+const importObject = {
+	env: {
+		get_input: function() { return 21; }
+	}
+};
+let wasm;
 WebAssembly.instantiateStreaming(fetch('library.wasm'), importObject)
 	.then(function(obj) {
+		wasm = obj;
 		document.write("petter() = " + obj.instance.exports.petter());
 	});
 </script>

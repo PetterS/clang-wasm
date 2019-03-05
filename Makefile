@@ -2,20 +2,25 @@ DEPS =
 OBJ = library.o
 OUTPUT = library.wasm
 
-$(OUTPUT): $(OBJ) Makefile
+$(OUTPUT): $(OBJ) library.syms Makefile
 	wasm-ld-8 \
 		-o $(OUTPUT) \
 		--no-entry \
-		--export=petter \
+		-allow-undefined-file library.syms \
+		--strip-all \
+		--export-dynamic \
 		$(OBJ)
 
-%.o: %.c $(DEPS)
+%.o: %.c $(DEPS) Makefile
 	clang-8 \
 		-c \
+		-Wall \
+		-Werror \
 		--target=wasm32 \
 		-Os \
 		-o $@ \
 		-nostdlib \
+		-fvisibility=hidden \
 		$<
 
 library.wat: $(OUTPUT) Makefile
