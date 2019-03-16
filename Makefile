@@ -11,8 +11,10 @@ COMPILE_FLAGS = -Wall \
 		-fvisibility=hidden \
 		-std=c++14 \
 		-ffunction-sections \
-		-fdata-sections
-		
+		-fdata-sections \
+		-DPRINTF_DISABLE_SUPPORT_FLOAT=1 \
+		-DPRINTF_DISABLE_SUPPORT_LONG_LONG=1 \
+		-DPRINTF_DISABLE_SUPPORT_PTRDIFF_T=1
 
 $(OUTPUT): $(OBJ) $(NANOLIBC_OBJ) Makefile
 	wasm-ld-8 \

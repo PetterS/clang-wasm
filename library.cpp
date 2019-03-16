@@ -9,7 +9,7 @@ extern "C" {
 }
 
 int two() {
-	puts("two() called");
+	printf("two() = %d called.\n", 2);
 	return 2;
 }
 
@@ -17,5 +17,7 @@ WASM_EXPORT int petter() {
 	int* p = (int*) malloc(sizeof(int));
 	p[0] = get_input();
 
-	return two() * p[0];
+	int result = two() * p[0];
+	printf("Result will be %d.\n", result);
+	return result;
 }

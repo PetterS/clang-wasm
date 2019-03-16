@@ -52,6 +52,7 @@ int puts ( const char * str ) {
 	return 0;
 }
 
+
 FILE* stdout = 0;
 FILE* stderr = 0;
 FILE* stdin = 0;
@@ -101,8 +102,7 @@ TRAP_FUNCTION(open, int, const char *pathname, int flags, mode_t mode);
 TRAP_FUNCTION(posix_memalign, int, void **memptr, size_t alignment, size_t size);
 TRAP_FUNCTION(read, size_t, int fd, void *buf, size_t count);
 TRAP_FUNCTION(realloc, void*, void*, size_t);
-TRAP_FUNCTION(setlocale, int, int, int);
-TRAP_FUNCTION(snprintf, int, char *buffer, size_t, const char *format, ...);
+TRAP_FUNCTION(setlocale, int, int, int);	
 TRAP_FUNCTION(sscanf, int, const char*, const char*, ...);
 TRAP_FUNCTION(strcmp, int, const char*, const char*); 
 TRAP_FUNCTION(strcoll_l, int, const char*, const char*, locale_t);
@@ -129,7 +129,6 @@ TRAP_FUNCTION(towupper_l, int, int, int);
 TRAP_FUNCTION(ungetc, int, int, FILE*);
 TRAP_FUNCTION(uselocale, int, int);
 TRAP_FUNCTION(vasprintf, int, char **strp, const char *fmt, va_list ap);
-TRAP_FUNCTION(vsnprintf, int, char*, size_t, const char*, va_list);
 TRAP_FUNCTION(vsscanf, int, const char * buffer, const char * format, va_list vlist);
 TRAP_FUNCTION(wcrtomb, size_t, char *s, wchar_t wc, mbstate_t *ps);
 TRAP_FUNCTION(wcscoll_l, int, const wchar_t*, const wchar_t*, locale_t);
