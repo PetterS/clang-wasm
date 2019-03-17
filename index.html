@@ -46,7 +46,6 @@ function freeCharPtr(ptr) {
 
 const importObject = {
 	env: {
-		get_input: function() { return 21; },
 		print_string: function(str) {
 			console.log(charPtrToString(str));
 		}
@@ -57,10 +56,11 @@ WebAssembly.instantiateStreaming(fetch('library.wasm'), importObject)
 	.then(function(obj) {
 		wasm = obj;
 
-		document.write("petter() = " + wasm.instance.exports.petter() + "<br />");
 		const s = stringToCharPtr('42');
-		document.write("string_to_int('42') = " + wasm.instance.exports.string_to_int(s) + "<br />");
+		document.write("<p>string_to_int('42') = " + wasm.instance.exports.string_to_int(s) + "</p>");
 		freeCharPtr(s);
+		wasm.instance.exports.factorial(500);
+		document.write("<p>500! printed to the console. </p>");
 	});
 </script>
 </body>
