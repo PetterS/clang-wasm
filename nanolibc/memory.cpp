@@ -3,13 +3,29 @@
 
 namespace {
 constexpr size_t PAGE_SIZE = 64 * 1014;
+ptrdiff_t current_usage = 0;
 
-size_t current_memory() {
+ptrdiff_t current_memory() {
 	return __builtin_wasm_memory_size(0);
 }
 
-size_t grow_memory(size_t delta) {
+ptrdiff_t grow_memory(size_t delta) {
 	return __builtin_wasm_memory_grow(0, delta);
+}
+
+void* sbrk(size_t increment) {
+	if (current_usage == 0) {
+		// First call to sbrk().
+		current_usage = current_memory() * PAGE_SIZE;
+	}
+	void* return_value = (void*) current_usage;
+	ptrdiff_t current_maximum = current_memory() * PAGE_SIZE;
+	ptrdiff_t available = current_maximum - current_usage;
+	if (available < increment) {
+		grow_memory(increment / PAGE_SIZE + 1);
+	}
+	current_usage += increment;
+	return return_value;
 }
 }
 
@@ -31,9 +47,7 @@ void operator delete[](void* ptr) noexcept {
 
 extern "C" {
 	void* malloc(size_t amount) {
-		void* ptr = (void*) (current_memory() * PAGE_SIZE);
-		grow_memory(amount / PAGE_SIZE + 1);
-		return ptr;
+		return sbrk(amount);
 	}
 
 	void free(void* mem) {
