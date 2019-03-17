@@ -4,53 +4,14 @@
 
 struct mbstate_t;
 
-namespace {
-constexpr size_t PAGE_SIZE = 64 * 1014;
-
-size_t current_memory() {
-	return __builtin_wasm_memory_size(0);
-}
-
-size_t grow_memory(size_t delta) {
-	return __builtin_wasm_memory_grow(0, delta);
-}
-
 [[noreturn]] void trap() {
 	__builtin_unreachable();
 }
-}
-
-void* operator new(size_t sz) {
-    return malloc(sz);
-}
-
-void* operator new[](size_t sz) {
-    return malloc(sz);
-}
-
-void operator delete(void* ptr) noexcept {
-    free(ptr);
-}
-
-void operator delete[](void* ptr) noexcept {
-    free(ptr);
-}
-
 
 extern "C" {
 
 // Will be provided by Javascript.
 void print_string(const char* str);
-
-void* malloc(size_t amount) {
-	void* ptr = (void*) (current_memory() * PAGE_SIZE);
-	grow_memory(amount / PAGE_SIZE + 1);
-	return ptr;
-}
-
-void free(void* mem) {
-
-}
 
 void* memcpy(void* dest, const void* src, size_t count) {
 	for (size_t i = 0; i < count; ++i) {
