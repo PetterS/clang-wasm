@@ -21,3 +21,16 @@ WASM_EXPORT int petter() {
 	printf("Result will be %d.\n", result);
 	return result;
 }
+
+
+WASM_EXPORT char* get_memory_for_string(int size) {
+	return (char*) malloc(size);
+}
+
+WASM_EXPORT int string_to_int(const char* str) {
+	int i = 0U;
+	while ('0' <= *str && *str <= '9') {
+		i = i * 10 + (int)((*str++) - '0');
+	}
+	return i;
+}

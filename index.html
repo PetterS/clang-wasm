@@ -9,11 +9,19 @@ let wasm;
 let memory;
 
 const decoder = new TextDecoder("utf-8");
+const encoder = new TextEncoder("utf-8");
 
 function charPtrToString(str) {
 	let length=0;
 	for (; memory[str + length] !== 0 ;++length) {}
 	return decoder.decode(memory.subarray(str, str + length));
+}
+
+function stringToCharPtr(str) {
+	const data = encoder.encode(str + "\x00");
+	const ptr = wasm.instance.exports.get_memory_for_string(data.length + 1);
+	memory.subarray(ptr).set(data);
+	return ptr;
 }
 
 // If the Webassemby module had been linked with
@@ -40,7 +48,10 @@ WebAssembly.instantiateStreaming(fetch('library.wasm'), importObject)
 	.then(function(obj) {
 		wasm = obj;
 		memory = new Uint8Array(wasm.instance.exports.memory.buffer);
-		document.write("petter() = " + obj.instance.exports.petter());
+
+		document.write("petter() = " + wasm.instance.exports.petter() + "<br />");
+		const s = stringToCharPtr('42');
+		document.write("string_to_int('42') = " + wasm.instance.exports.string_to_int(s) + "<br />");
 	});
 </script>
 </body>
