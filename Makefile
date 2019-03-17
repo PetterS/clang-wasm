@@ -45,4 +45,4 @@ library.wat: $(OUTPUT) Makefile
 wat: library.wat
 
 clean:
-	rm -f $(OBJ) $(LIBCXX_OBJ) $(OUTPUT) library.wat
+	rm -f $(OBJ) $(NANOLIBC_OBJ) $(OUTPUT) library.wat
