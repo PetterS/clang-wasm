@@ -3,31 +3,32 @@
 #include <stdlib.h>
 
 struct mbstate_t;
- 
-constexpr size_t max_memory = 10 * 1024;
-char memory[max_memory];
-size_t memory_pos = 0;
 
+namespace {
+constexpr size_t PAGE_SIZE = 64 * 1014;
+
+size_t current_memory() {
+	return __builtin_wasm_memory_size(0);
+}
+
+size_t grow_memory(size_t delta) {
+	return __builtin_wasm_memory_grow(0, delta);
+}
 
 [[noreturn]] void trap() {
 	__builtin_unreachable();
 }
-
+}
 
 extern "C" {
 
 // Will be provided by Javascript.
 void print_string(const char* str);
 
-
 void* malloc(size_t amount) {
-	if (amount + memory_pos >= max_memory) {
-		print_string("Out of memory.");
-		trap();
-	}
-	auto mem = &memory[memory_pos];
-	memory_pos += amount;
-	return mem;
+	void* ptr = (void*) (current_memory() * PAGE_SIZE);
+	grow_memory(amount / PAGE_SIZE + 1);
+	return ptr;
 }
 
 void free(void* mem) {
