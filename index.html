@@ -29,6 +29,10 @@ function stringToCharPtr(str) {
 	return ptr;
 }
 
+function freeCharPtr(ptr) {
+	wasm.instance.exports.free_memory_for_string(ptr);
+}
+
 // If the Webassemby module had been linked with
 //
 //   --import-memory
@@ -56,6 +60,7 @@ WebAssembly.instantiateStreaming(fetch('library.wasm'), importObject)
 		document.write("petter() = " + wasm.instance.exports.petter() + "<br />");
 		const s = stringToCharPtr('42');
 		document.write("string_to_int('42') = " + wasm.instance.exports.string_to_int(s) + "<br />");
+		freeCharPtr(s);
 	});
 </script>
 </body>

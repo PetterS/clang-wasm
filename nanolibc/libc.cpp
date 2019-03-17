@@ -20,6 +20,23 @@ size_t grow_memory(size_t delta) {
 }
 }
 
+void* operator new(size_t sz) {
+    return malloc(sz);
+}
+
+void* operator new[](size_t sz) {
+    return malloc(sz);
+}
+
+void operator delete(void* ptr) noexcept {
+    free(ptr);
+}
+
+void operator delete[](void* ptr) noexcept {
+    free(ptr);
+}
+
+
 extern "C" {
 
 // Will be provided by Javascript.

@@ -24,8 +24,13 @@ WASM_EXPORT int petter() {
 
 
 WASM_EXPORT char* get_memory_for_string(int size) {
-	return (char*) malloc(size);
+	return new char[size];
 }
+
+WASM_EXPORT void free_memory_for_string(char* str) {
+	delete[] str;
+}
+
 
 WASM_EXPORT int string_to_int(const char* str) {
 	int i = 0U;
