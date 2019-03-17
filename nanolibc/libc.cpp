@@ -41,6 +41,13 @@ void* memcpy(void* dest, const void* src, size_t count) {
 	return dest;
 }
 
+void* memset (void * dest, int value, size_t count) {
+	for (size_t i = 0; i < count; ++i) {
+		((unsigned char*) dest)[i] =  (unsigned char) value;
+	}
+	return dest;
+}
+
 size_t strlen( const char *str ) {
 	print_string("strlen");
 	trap();
@@ -96,7 +103,6 @@ TRAP_FUNCTION(mbtowc, int, wchar_t*, const char*, size_t);
 TRAP_FUNCTION(memchr, void*, const void*, int ch, size_t);
 TRAP_FUNCTION(memcmp, int, const void*, const void*, size_t);
 TRAP_FUNCTION(memmove, void*, void*, const void*, size_t);
-TRAP_FUNCTION(memset, void*, void*, int, size_t);
 TRAP_FUNCTION(newlocale, int, int, int, int);
 TRAP_FUNCTION(open, int, const char *pathname, int flags, mode_t mode);
 TRAP_FUNCTION(posix_memalign, int, void **memptr, size_t alignment, size_t size);
