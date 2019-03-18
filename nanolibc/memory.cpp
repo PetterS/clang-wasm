@@ -54,9 +54,10 @@ void operator delete[](void* ptr) noexcept {
 // Useful description of this really simple malloc:
 // https://danluu.com/malloc-tutorial/
 struct MemoryBlock {
-	size_t size = 0;
-	MemoryBlock* next = nullptr;
-	bool free = false;
+	size_t size;
+	MemoryBlock* next;
+	enum class State : unsigned int {FREE=0xFEFEFEFE, ALLOCATED=0xC1C1C1C1};
+	State state;
 };
 
 MemoryBlock* start_block = nullptr;
@@ -65,12 +66,14 @@ MemoryBlock* new_block(MemoryBlock* last_block, size_t size) {
 	MemoryBlock* block = (MemoryBlock*) sbrk(sizeof(MemoryBlock) + size);
 	last_block->next = block;
 	block->size = size;
+	block->next = nullptr;
+	block->state = MemoryBlock::State::ALLOCATED;
 	return block;
 }
 
 MemoryBlock* find_available(MemoryBlock** last_block, size_t size) {
 	MemoryBlock* current = start_block;
-	while (current && !(current->free && current->size >= size)) {
+	while (current && !(current->state == MemoryBlock::State::FREE && current->size >= size)) {
 		*last_block = current;
 		current = current->next;
 	}
@@ -89,8 +92,8 @@ extern "C" {
 		MemoryBlock* last = start_block;
 		MemoryBlock* block = find_available(&last, amount);
 		if (block) {
-			memory_assert(block->free);
-			block->free = false;
+			memory_assert(block->state == MemoryBlock::State::FREE);
+			block->state = MemoryBlock::State::ALLOCATED;
 		} else {
 			block = new_block(last, amount);
 		}
@@ -103,7 +106,7 @@ extern "C" {
 		}
 
 		MemoryBlock* block = ((MemoryBlock*)ptr) - 1;
-		memory_assert(!block->free);
+		memory_assert(block->state == MemoryBlock::State::ALLOCATED);
 		if (block->size >= size) {
 			return ptr;
 		}
@@ -126,7 +129,7 @@ extern "C" {
 			return;
 		}
 		MemoryBlock* block = ((MemoryBlock*)mem) - 1;
-		memory_assert(!block->free);
-		block->free = true;
+		memory_assert(block->state == MemoryBlock::State::ALLOCATED);
+		block->state = MemoryBlock::State::FREE;
 	}
 }
