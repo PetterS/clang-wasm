@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void dump_memory();
+
 #define WASM_EXPORT __attribute__((visibility("default"))) extern "C"
  
-
 WASM_EXPORT char* get_memory_for_string(int size) {
 	return new char[size];
 }
@@ -21,6 +22,10 @@ WASM_EXPORT int string_to_int(const char* str) {
 		i = i * 10 + (int)((*str++) - '0');
 	}
 	return i;
+}
+
+WASM_EXPORT void debug_dump_memory() {
+	dump_memory();
 }
 
 

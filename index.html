@@ -64,6 +64,11 @@ WebAssembly.instantiateStreaming(fetch('library.wasm'), importObject)
 		wasm.instance.exports.factorial(200);
 		wasm.instance.exports.factorial(500);
 		document.write("<p>500! printed to the console. </p>");
+		document.write(`<p>
+		                    <button onclick="wasm.instance.exports.debug_dump_memory();">
+		                        Dump memory
+		                    </button>
+		               	</p>`)
 	});
 </script>
 </body>

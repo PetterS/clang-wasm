@@ -49,8 +49,16 @@ void operator delete[](void* ptr) noexcept {
     free(ptr);
 }
 
-#define memory_assert(cond) if (!(cond)) { printf("Memory error at %s:%d: %s.\n", __FILE__, __LINE__, #cond); trap(); }
+void dump_memory();
+#define memory_assert(cond) \
+	if (!(cond)) { \
+		dump_memory(); \
+		printf("Memory error at %s:%d: %s.\n", __FILE__, __LINE__, #cond); \
+		trap(); \
+	}
 
+
+namespace {
 // Useful description of this really simple malloc:
 // https://danluu.com/malloc-tutorial/
 struct MemoryBlock {
@@ -73,7 +81,6 @@ MemoryBlock* new_block(MemoryBlock* last_block, size_t size) {
 
 MemoryBlock* find_available(MemoryBlock** last_block, size_t size) {
 	// TODO: Merge consecutive free blocks if a large one is required.
-
 	MemoryBlock* current = start_block;
 	while (current && !(current->state == MemoryBlock::State::FREE && current->size >= size)) {
 		*last_block = current;
@@ -99,6 +106,19 @@ MemoryBlock* find_available(MemoryBlock** last_block, size_t size) {
 
 	return current;
 }
+}
+
+void dump_memory() {
+	printf("Memory dump\n");
+	for (MemoryBlock* block = start_block; block; block = block->next) {
+		memory_assert(block->state == MemoryBlock::State::FREE ||
+		              block->state == MemoryBlock::State::ALLOCATED);
+		printf("0x%X: size %d. %s.\n", 
+		       (int) block,
+		       (int) block->size,
+		       block->state == MemoryBlock::State::FREE ? "FREE" : "ALLOCATED"); 
+	}
+}
 
 extern "C" {
 	void* malloc(size_t amount) {
@@ -107,6 +127,9 @@ extern "C" {
 		}
 		if (!start_block) {
 			start_block = (MemoryBlock*) sbrk(sizeof(MemoryBlock));
+			start_block->size = 0;
+			start_block->next = nullptr;
+			start_block->state = MemoryBlock::State::FREE;
 		}
 		
 		MemoryBlock* last = start_block;
