@@ -33,8 +33,7 @@ WASM_EXPORT void factorial(int factorial) {
 	int digitvalue = 1000;
 	const char* digitformatstring = "%03d";
 
-	//Start with a buffer of 20 digits
-	unsigned int maxdigits = 20;
+	unsigned int maxdigits = 5 + factorial / 30;
 	unsigned int* digits = (unsigned int*) calloc(maxdigits,sizeof(int));
 	unsigned int* result = (unsigned int*) malloc(maxdigits*sizeof(int));
 
@@ -71,7 +70,7 @@ WASM_EXPORT void factorial(int factorial) {
 		while (digits[p--]==0) 	digitsleft++;
 		if (digitsleft < 10) {
 			//Make the buffers larger
-			maxdigits += 40;
+			maxdigits += 10 + factorial % 7;
 			digits = (unsigned int*) realloc(digits,maxdigits*sizeof(int));
 			//Set the new part of the buffer to zero
 			for (int i=p+2;i<maxdigits;++i)
@@ -92,9 +91,10 @@ WASM_EXPORT void factorial(int factorial) {
 			printf("%d",digits[d]);
 			prnt=1;
 		}
-		else if (prnt)
+		else if (prnt) {
 			//Print the following digits (with zero-padding)
 			printf(digitformatstring,digits[d]);
+		}
 	}
 
 	free(digits);

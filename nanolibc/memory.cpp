@@ -72,11 +72,31 @@ MemoryBlock* new_block(MemoryBlock* last_block, size_t size) {
 }
 
 MemoryBlock* find_available(MemoryBlock** last_block, size_t size) {
+	// TODO: Merge consecutive free blocks if a large one is required.
+
 	MemoryBlock* current = start_block;
 	while (current && !(current->state == MemoryBlock::State::FREE && current->size >= size)) {
 		*last_block = current;
 		current = current->next;
 	}
+
+	if (current && current->next && current->size > size + sizeof(MemoryBlock) + 10) {
+		// This block is significantly larger than what is needed.
+		// We can split it and only use the first part of it.
+		int nblocks = 1 + 1 + size / sizeof(MemoryBlock);
+		MemoryBlock* next = (MemoryBlock*) current + nblocks;	
+
+		auto old_size = current->size;
+		next->size = ((current->next - next) - 1) * sizeof(MemoryBlock);
+		next->next = current->next;
+		next->state = MemoryBlock::State::FREE;
+		current->next = next;
+		current->size = (nblocks - 1) * sizeof(MemoryBlock);
+
+		memory_assert(old_size == current->size + sizeof(MemoryBlock) + next->size);			
+	}
+
+
 	return current;
 }
 

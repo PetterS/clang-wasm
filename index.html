@@ -59,6 +59,9 @@ WebAssembly.instantiateStreaming(fetch('library.wasm'), importObject)
 		const s = stringToCharPtr('42');
 		document.write("<p>string_to_int('42') = " + wasm.instance.exports.string_to_int(s) + "</p>");
 		freeCharPtr(s);
+		wasm.instance.exports.factorial(50);
+		wasm.instance.exports.factorial(100);
+		wasm.instance.exports.factorial(200);
 		wasm.instance.exports.factorial(500);
 		document.write("<p>500! printed to the console. </p>");
 	});

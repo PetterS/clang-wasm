@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-constexpr int line_buffer_size = 1024;
+constexpr int line_buffer_size = 100;
 int line_buffer_pos = 0;
 char* line_buffer = nullptr;
 
@@ -22,6 +22,10 @@ void _putchar(char ch) {
 		line_buffer_pos = 0;
 	} else if (line_buffer_pos < line_buffer_size - 1) {
 		line_buffer[line_buffer_pos++] = ch;
+	}
+
+	if (line_buffer_pos == line_buffer_size - 1) {
+		_putchar('\n');
 	}
 }
 
