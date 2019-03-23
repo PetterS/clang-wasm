@@ -72,7 +72,9 @@ MemoryBlock* start_block = nullptr;
 
 MemoryBlock* new_block(MemoryBlock* last_block, size_t size) {
 	MemoryBlock* block = (MemoryBlock*) sbrk(sizeof(MemoryBlock) + size);
-	last_block->next = block;
+	if (last_block) {
+		last_block->next = block;
+	}
 	block->size = size;
 	block->next = nullptr;
 	block->state = MemoryBlock::State::ALLOCATED;
@@ -129,14 +131,24 @@ MemoryBlock* find_available(MemoryBlock** last_block, size_t size) {
 
 void dump_memory() {
 	printf("Memory dump\n");
+	size_t allocated_usage = 0;
+	size_t free_usage = 0;
 	for (MemoryBlock* block = start_block; block; block = block->next) {
 		memory_assert(block->state == MemoryBlock::State::FREE ||
 		              block->state == MemoryBlock::State::ALLOCATED);
-		printf("0x%X: size %d. %s.\n", 
+		if (block->state == MemoryBlock::State::ALLOCATED) {
+			allocated_usage += block->size;
+		} else {
+			free_usage += block->size;
+		}
+		printf("  0x%X: size %d. %s.\n", 
 		       (int) block,
 		       (int) block->size,
 		       block->state == MemoryBlock::State::FREE ? "FREE" : "ALLOCATED"); 
 	}
+	printf("  Cur. memory usage: %9d bytes.\n", (int) allocated_usage);
+	printf("  Tot. memory usage: %9d bytes.\n", (int) (allocated_usage + free_usage));
+	printf("  Peak memory usage: %9d bytes.\n", (int) current_usage);
 }
 
 extern "C" {
@@ -145,10 +157,8 @@ extern "C" {
 			return nullptr;
 		}
 		if (!start_block) {
-			start_block = (MemoryBlock*) sbrk(sizeof(MemoryBlock));
-			start_block->size = 0;
-			start_block->next = nullptr;
-			start_block->state = MemoryBlock::State::FREE;
+			start_block = new_block(nullptr, amount);
+			return start_block + 1;
 		}
 		
 		MemoryBlock* last = start_block;
