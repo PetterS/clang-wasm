@@ -27,12 +27,6 @@ void* memset (void * dest, int value, size_t count) {
 	return dest;
 }
 
-size_t strlen(const char *str) {
-	auto start = str;
-	while (*++str);
-	return str - start;
-}
-
 int puts ( const char * str ) {
 	print_string(str);
 	return 0;
