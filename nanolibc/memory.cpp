@@ -80,10 +80,29 @@ MemoryBlock* new_block(MemoryBlock* last_block, size_t size) {
 }
 
 MemoryBlock* find_available(MemoryBlock** last_block, size_t size) {
-	// TODO: Merge consecutive free blocks if a large one is required.
 	MemoryBlock* current = start_block;
+	MemoryBlock* first_free = nullptr;
+	size_t total_free_size = 0;
 	while (current && !(current->state == MemoryBlock::State::FREE && current->size >= size)) {
 		*last_block = current;
+
+		if (total_free_size == 0 && current->state == MemoryBlock::State::FREE) {
+			total_free_size = current->size;
+			first_free = current;
+		} else if (current->state == MemoryBlock::State::FREE) {
+			total_free_size += sizeof(MemoryBlock) + current->size;
+		} else {
+			total_free_size = 0;
+		}
+
+		// Can we merge consecutive blocks to fill this allocation?
+		if (total_free_size >= size) {
+			first_free->next = current->next;
+			first_free->size = total_free_size;
+			current = first_free;
+			break;
+		}
+
 		current = current->next;
 	}
 
