@@ -173,10 +173,17 @@ extern "C" {
 			return ptr;
 		}
 
-		void* new_ptr = malloc(size);
-		memcpy(new_ptr, ptr, block->size);
-		free(ptr);
-		return new_ptr;
+		if (block->next == nullptr) {
+			// This is the last block, so we can just increase it.
+			sbrk(size - block->size);
+			block->size = size;
+			return ptr;
+		} else {
+			void* new_ptr = malloc(size);
+			memcpy(new_ptr, ptr, block->size);
+			free(ptr);
+			return new_ptr;
+		}
 	}
 
 	void* calloc(size_t num, size_t size) {
