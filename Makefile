@@ -5,6 +5,7 @@ OUTPUT = library.wasm
 
 COMPILE_FLAGS = -Wall \
 		--target=wasm32 \
+		-I. \
 		-Os \
 		-flto \
 		-nostdlib \

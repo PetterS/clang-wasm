@@ -1,7 +1,4 @@
-#include <memory.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "nanolibc/libc.h"
 
 [[noreturn]] void trap();
 
@@ -89,11 +86,16 @@ MemoryBlock* find_available(MemoryBlock** last_block, size_t size) {
 		*last_block = current;
 
 		if (total_free_size == 0 && current->state == MemoryBlock::State::FREE) {
+			// First free block.
 			total_free_size = current->size;
 			first_free = current;
 		} else if (current->state == MemoryBlock::State::FREE) {
+			// Subsequent free block.
 			total_free_size += sizeof(MemoryBlock) + current->size;
-		} else {
+		} else if (total_free_size > 0) {
+			// First allocated block after some free blocks. Merge them.
+			first_free->next = current;
+			first_free->size = total_free_size;
 			total_free_size = 0;
 		}
 
