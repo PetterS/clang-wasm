@@ -4,6 +4,18 @@
 	<meta charset="utf-8" />
 </head>
 <body>
+<h1>500!</h1>
+<p id="factorial500"></p>
+
+<h1>string_to_int('42')</h1>
+<p id="stringToInt"></p>
+
+<h1>Control</h1>
+<p>
+	<button onclick="wasm.instance.exports.debug_dump_memory();">
+		Dump memory
+	</button>
+</p>
 <script>
 let wasm;
 
@@ -44,10 +56,14 @@ function freeCharPtr(ptr) {
 //
 // But this module is providing its own memory and exporting it.
 
+let printString = function(str) {
+	console.log(str);
+};
+
 const importObject = {
 	env: {
 		print_string: function(str) {
-			console.log(charPtrToString(str));
+			printString(charPtrToString(str));
 		}
 	}
 };
@@ -57,18 +73,19 @@ WebAssembly.instantiateStreaming(fetch('library.wasm'), importObject)
 		wasm = obj;
 
 		const s = stringToCharPtr('42');
-		document.write("<p>string_to_int('42') = " + wasm.instance.exports.string_to_int(s) + "</p>");
+		document.getElementById("stringToInt").innerHTML = "" + wasm.instance.exports.string_to_int(s);
 		freeCharPtr(s);
+
 		wasm.instance.exports.factorial(50);
 		wasm.instance.exports.factorial(100);
 		wasm.instance.exports.factorial(200);
+
+		const oldPrintString = printString;
+		printString = function(str) {
+			document.getElementById("factorial500").innerHTML += str;
+		}
 		wasm.instance.exports.factorial(500);
-		document.write("<p>500! printed to the console. </p>");
-		document.write(`<p>
-		                    <button onclick="wasm.instance.exports.debug_dump_memory();">
-		                        Dump memory
-		                    </button>
-		               	</p>`)
+		printString = oldPrintString;
 	});
 </script>
 </body>
