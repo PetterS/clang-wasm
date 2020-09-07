@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-void dump_memory();
+#include "nanolibc/libc.h"
 
 #define WASM_EXPORT __attribute__((visibility("default"))) extern "C"
  

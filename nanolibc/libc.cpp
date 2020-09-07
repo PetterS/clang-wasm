@@ -1,6 +1,4 @@
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "nanolibc/libc.h"
 
 struct mbstate_t;
 
