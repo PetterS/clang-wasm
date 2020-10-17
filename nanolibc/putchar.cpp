@@ -1,4 +1,5 @@
-#include <stdlib.h>
+#include "libc.h"
+#include "libc_extra.h"
 
 constexpr int line_buffer_size = 100;
 int line_buffer_pos = 0;
@@ -7,9 +8,6 @@ char* line_buffer = nullptr;
 
 extern "C" {
 struct FILE;
-
-// Will be provided by Javascript.
-void print_string(const char* str);
 
 void _putchar(char ch) {
 	if (!line_buffer) {

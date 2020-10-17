@@ -1,5 +1,6 @@
+LLVM_VERSION ?= 11
+
 DEPS = 
-LLVM_VERSION = 8
 OBJ = library.o
 NANOLIBC_OBJ = $(patsubst %.cpp,%.o,$(wildcard nanolibc/*.cpp))
 OUTPUT = library.wasm
@@ -23,6 +24,7 @@ $(OUTPUT): $(OBJ) $(NANOLIBC_OBJ) Makefile
 		--no-entry \
 		--strip-all \
 		--export-dynamic \
+		--allow-undefined \
 		--initial-memory=131072 \
 		-error-limit=0 \
 		--lto-O3 \
@@ -33,7 +35,7 @@ $(OUTPUT): $(OBJ) $(NANOLIBC_OBJ) Makefile
 		$(NANOLIBC_OBJ)
 
 
-%.o: %.cpp $(DEPS) Makefile
+%.o: %.cpp $(DEPS) Makefile nanolibc/libc.h nanolibc/libc_extra.h
 	clang++-$(LLVM_VERSION) \
 		-c \
 		$(COMPILE_FLAGS) \
