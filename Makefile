@@ -1,5 +1,3 @@
-LLVM_VERSION ?= 11
-
 DEPS = 
 OBJ = library.o
 NANOLIBC_OBJ = $(patsubst %.cpp,%.o,$(wildcard nanolibc/*.cpp))
@@ -8,7 +6,6 @@ OUTPUT = library.wasm
 COMPILE_FLAGS = -Wall \
 		--target=wasm32 \
 		-Os \
-		-flto \
 		-nostdlib \
 		-fvisibility=hidden \
 		-std=c++14 \
@@ -19,7 +16,7 @@ COMPILE_FLAGS = -Wall \
 		-DPRINTF_DISABLE_SUPPORT_PTRDIFF_T=1
 
 $(OUTPUT): $(OBJ) $(NANOLIBC_OBJ) Makefile
-	wasm-ld-$(LLVM_VERSION) \
+	wasm-ld \
 		-o $(OUTPUT) \
 		--no-entry \
 		--strip-all \
@@ -36,7 +33,7 @@ $(OUTPUT): $(OBJ) $(NANOLIBC_OBJ) Makefile
 
 
 %.o: %.cpp $(DEPS) Makefile nanolibc/libc.h nanolibc/libc_extra.h
-	clang++-$(LLVM_VERSION) \
+	clang++ \
 		-c \
 		$(COMPILE_FLAGS) \
 		-o $@ \
