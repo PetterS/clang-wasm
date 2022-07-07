@@ -16,7 +16,7 @@ COMPILE_FLAGS = -Wall \
 		-DPRINTF_DISABLE_SUPPORT_PTRDIFF_T=1
 
 $(OUTPUT): $(OBJ) $(NANOLIBC_OBJ) Makefile
-	wasm-ld \
+	wasm-ld-8 \
 		-o $(OUTPUT) \
 		--no-entry \
 		--strip-all \
@@ -33,7 +33,7 @@ $(OUTPUT): $(OBJ) $(NANOLIBC_OBJ) Makefile
 
 
 %.o: %.cpp $(DEPS) Makefile nanolibc/libc.h nanolibc/libc_extra.h
-	clang++ \
+	clang++-8 \
 		-c \
 		$(COMPILE_FLAGS) \
 		-o $@ \
