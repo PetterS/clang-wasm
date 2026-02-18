@@ -45,7 +45,7 @@ WASM_EXPORT void factorial(int factorial) {
 	for (unsigned int f=2;f<=factorial;++f) {
 		//Perform the multiplication and store the result in
 		//the result array
-		memset(result,0,maxdigits);
+		memset(result,0,maxdigits*sizeof(int));
 		unsigned int memory=0; //Amount to carry over to the next digit
 		for (unsigned int pos = 0; pos < maxdigits; pos++)
 	        {
