@@ -1,9 +1,14 @@
-DEPS = 
+CXX = clang++
+LD = wasm-ld
+WASM2WAT = ~/build/wabt/wasm2wat
+
+OUTPUT = library.wasm
 OBJ = library.o
 NANOLIBC_OBJ = $(patsubst %.cpp,%.o,$(wildcard nanolibc/*.cpp))
-OUTPUT = library.wasm
+ALL_OBJ = $(OBJ) $(NANOLIBC_OBJ)
+DEPS = $(ALL_OBJ:.o=.d)
 
-COMPILE_FLAGS = -Wall \
+CXXFLAGS = -Wall \
 		--target=wasm32 \
 		-Os \
 		-nostdlib \
@@ -13,12 +18,10 @@ COMPILE_FLAGS = -Wall \
 		-fdata-sections \
 		-DPRINTF_DISABLE_SUPPORT_FLOAT=1 \
 		-DPRINTF_DISABLE_SUPPORT_LONG_LONG=1 \
-		-DPRINTF_DISABLE_SUPPORT_PTRDIFF_T=1
+		-DPRINTF_DISABLE_SUPPORT_PTRDIFF_T=1 \
+		-MMD -MP
 
-$(OUTPUT): $(OBJ) $(NANOLIBC_OBJ) Makefile
-	wasm-ld \
-		-o $(OUTPUT) \
-		--no-entry \
+LDFLAGS = --no-entry \
 		--strip-all \
 		--export-dynamic \
 		--allow-undefined \
@@ -26,22 +29,24 @@ $(OUTPUT): $(OBJ) $(NANOLIBC_OBJ) Makefile
 		--error-limit=0 \
 		--lto-O3 \
 		-O3 \
-		--gc-sections \
-		$(OBJ) \
-		$(NANOLIBC_OBJ)
+		--gc-sections
 
+.PHONY: all clean wat
 
-%.o: %.cpp $(DEPS) Makefile nanolibc/libc.h nanolibc/libc_extra.h
-	clang++ \
-		-c \
-		$(COMPILE_FLAGS) \
-		-o $@ \
-		$<
+all: $(OUTPUT)
 
-library.wat: $(OUTPUT) Makefile
-	~/build/wabt/wasm2wat -o library.wat $(OUTPUT)
+$(OUTPUT): $(ALL_OBJ)
+	$(LD) -o $@ $(LDFLAGS) $^
+
+%.o: %.cpp
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
+
+-include $(DEPS)
+
+library.wat: $(OUTPUT)
+	$(WASM2WAT) -o $@ $<
 
 wat: library.wat
 
 clean:
-	rm -f $(OBJ) $(NANOLIBC_OBJ) $(OUTPUT) library.wat
+	rm -f $(ALL_OBJ) $(DEPS) $(OUTPUT) library.wat
