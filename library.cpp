@@ -72,10 +72,11 @@ WASM_EXPORT void factorial(int factorial) {
 		while (digits[p--]==0) 	digitsleft++;
 		if (digitsleft < 10) {
 			//Make the buffers larger
+			unsigned int old_maxdigits = maxdigits;
 			maxdigits += 10 + factorial % 7;
 			digits = (unsigned int*) realloc(digits,maxdigits*sizeof(int));
 			//Set the new part of the buffer to zero
-			for (int i=p+2;i<maxdigits;++i)
+			for (unsigned int i=old_maxdigits;i<maxdigits;++i)
 				digits[i]=0;
 
 			free(result); //no need to realloc result
