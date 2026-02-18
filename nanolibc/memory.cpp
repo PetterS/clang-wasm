@@ -3,7 +3,7 @@
 [[noreturn]] void trap();
 
 namespace {
-constexpr size_t PAGE_SIZE = 64 * 1014;
+constexpr size_t PAGE_SIZE = 64 * 1024;
 ptrdiff_t current_usage = 0;
 
 ptrdiff_t current_memory() {
