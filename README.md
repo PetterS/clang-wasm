@@ -1,4 +1,4 @@
-# Webassemly with only Clang 8+ (tested with 11, 14)
+# Webassemly with only Clang (tested with 8–18)
 
 I did not find instructions for this anywhere online, so here they are. We can now build small wasm files with nothing other than Clang (e.g. Emscripten is not needed).
 
